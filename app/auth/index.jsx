@@ -17,7 +17,7 @@ const AuthScreen = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState('');
 
   const handleAuth = async () => {
     if (!email.trim() || !password.trim()) {
@@ -30,20 +30,18 @@ const AuthScreen = () => {
       return;
     }
 
-    let response;
+    let response = isRegistering
+      ? await register(email, password)
+      : await login(email, password);
 
-    if (isRegistering) {
-      response = await register(email, password);
-    } else {
-      response = await login(email, password);
-    }
+    console.log('Auth Response:', response); // ✅ Debugging
 
-    if (response?.error) {
+    if (!response.success) {
       Alert.alert('Error', response.error);
       return;
     }
 
-    router.replace('/notes');
+    router.replace('/notes'); // ✅ Navigate after successful login
   };
 
   return (
@@ -69,7 +67,6 @@ const AuthScreen = () => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        textContentType='none'
       />
 
       {isRegistering && (
@@ -80,7 +77,6 @@ const AuthScreen = () => {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
-          textContentType='none'
         />
       )}
 

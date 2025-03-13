@@ -8,59 +8,44 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkUser();
+    checkUser(); // ✅ Only called once at startup
   }, []);
 
   const checkUser = async () => {
     setLoading(true);
-    const response = await authService.getUser();
-
-    if (response?.error) {
-      setUser(null);
-    } else {
-      setUser(response);
-    }
-
+    const userData = await authService.getUser();
+    setUser(userData);
     setLoading(false);
   };
 
   const login = async (email, password) => {
     const response = await authService.login(email, password);
-
-    if (response?.error) {
+    
+    if (!response.success) {
       return response;
     }
 
-    await checkUser();
+    setUser(await authService.getUser()); // ✅ Update state directly
     return { success: true };
   };
 
   const register = async (email, password) => {
     const response = await authService.register(email, password);
 
-    if (response?.error) {
+    if (!response.success) {
       return response;
     }
 
-    return login(email, password); // Auto-login after register
+    return login(email, password); // ✅ Auto-login after registration
   };
 
   const logout = async () => {
     await authService.logout();
     setUser(null);
-    await checkUser();
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        register,
-        logout,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

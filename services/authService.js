@@ -5,34 +5,29 @@ const authService = {
   // Register a user
   async register(email, password) {
     try {
-      const response = await account.create(ID.unique(), email, password);
-      return response;
+      const user = await account.create(ID.unique(), email, password);
+      return { success: true, user };
     } catch (error) {
-      return {
-        error: error.message || 'Registration failed. Please try agian',
-      };
+      return { success: false, error: error.message || 'Registration failed' };
     }
   },
+
   // Login
   async login(email, password) {
     try {
-      const response = await account.createEmailPasswordSession(
-        email,
-        password
-      );
-      return response;
+      const session = await account.createEmailPasswordSession(email, password);
+      return { success: true, session };
     } catch (error) {
-      return {
-        error: error.message || 'Login failed. Please check your credentials',
-      };
+      return { success: false, error: error.message || 'Login failed' };
     }
   },
-  // Get logged in user
+
+  // Get logged-in user
   async getUser() {
     try {
-      return await account.get();
+      return await account.get(); // ✅ Directly return user object
     } catch (error) {
-      return null;
+      return null; // ✅ No need to return an error message here
     }
   },
 
@@ -40,10 +35,9 @@ const authService = {
   async logout() {
     try {
       await account.deleteSession('current');
+      return { success: true };
     } catch (error) {
-      return {
-        error: error.message || 'Logout failed. Please try again',
-      };
+      return { success: false, error: error.message || 'Logout failed' };
     }
   },
 };
