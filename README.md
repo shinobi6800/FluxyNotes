@@ -4,7 +4,6 @@ This is a simple notes app built with React Native. It allows users to create, r
 
 <img src="/assets/images/screen.png" width="900">
 
-This project goes with my React Native Mini-Course on YouTube.
 
 ## Usage
 
